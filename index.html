@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطعم الأصيل</title>
+    <!-- استيراد خطوط جوجل العربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- استيراد مكتبة FontAwesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        :root {
+            --primary: #ff4757;
+            --secondary: #2f3542;
+            --light: #f1f2f6;
+            --dark: #2f3542;
+            --success: #2ed573;
+            --accent: #ffa502;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* رأس الصفحة */
+        header {
+            background: linear-gradient(135deg, #2f3542, #1e272e);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        header p {
+            color: #a4b0be;
+            font-size: 1.1rem;
+        }
+
+        /* شريط التنقل والبحث */
+        .nav-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .categories {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .cat-btn {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .cat-btn.active, .cat-btn:hover {
+            background: var(--primary);
+            color: rgb(0, 0, 0);
+            border-color: var(--primary);
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.5rem;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            outline: none;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        /* شبكة المنتجات */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto 4rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .food-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+
+        .food-content {
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .food-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .food-desc {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .food-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .food-price {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #ff2b3d;
+        }
+
+        /* سلة الطلبات الجانبية */
+        .cart-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .cart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f1f2f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f1f2f6;
+        }
+
+        .cart-item-details h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .cart-item-details p {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-item-controls button {
+            background: #eee;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-total {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+            padding-top: 0.5rem;
+            border-top: 2px dashed #ddd;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkout-btn:hover {
+            background: #26af5f;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #888;
+            padding: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fas fa-utensils"></i> مطعم الأصيل</h1>
+        <p>اطلب أشهى المأكولات الطازجة توصيل سريع لحد باب البيت</p>
+    </header>
+
+    <div class="nav-container">
+        <div class="categories" id="categoriesContainer">
+            <button class="cat-btn active" onclick="filterCategory('all')">الكل</button>
+            <button class="cat-btn" onclick="filterCategory('burgers')">برجر</button>
+            <button class="cat-btn" onclick="filterCategory('pizza')">بيتزا</button>
+            <button class="cat-btn" onclick="filterCategory('drinks')">مشروبات</button>
+        </div>
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="ابحث عن وجبتك المفضلة..." oninput="searchFood()">
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- قائمة الوجبات -->
+        <div class="menu-grid" id="menuGrid">
+            <!-- يتم تعبئة المنتجات تلقائياً بواسطة الـ JavaScript -->
+        </div>
+
+        <!-- السلة -->
+        <div class="cart-section">
+            <div class="cart-title">
+                <span>سلة الطلبات</span>
+                <i class="fas fa-shopping-cart text-primary"></i>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <div class="empty-cart">السلة فارغة حالياً</div>
+            </div>
+            <div class="cart-total">
+                <span>المجموع الكلي:</span>
+                <span id="cartTotal">0 ج.م</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">تأكيد الطلب</button>
+        </div>
+    </div>
+
+    <!-- نافذة إدخال بيانات العميل (Modal) -->
+    <div id="checkoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:white; padding:2rem; border-radius:15px; width:90%; max-width:450px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom:1rem; color:var(--secondary); border-bottom:2px solid #eee; padding-bottom:0.5rem;">بيانات التوصيل</h3>
+            <form id="orderForm" onsubmit="submitOrder(event)">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; margin-bottom:0.3rem; font-weight:600;">الاسم بالكامل *</label>
+                    <input type="text" id="custName" required placeholder="أدخل اسمك" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:8px; outline:none;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; margin-bottom:0.3rem; font-weight:600;">رقم التليفون *</label>
+                    <input type="tel" id="custPhone" required placeholder="01xxxxxxxxx" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:8px; outline:none;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; margin-bottom:0.3rem; font-weight:600;">العنوان التفصيلي *</label>
+                    <input type="text" id="custAddress" required placeholder="اسم الشارع - رقم العقار - الشقة" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:8px; outline:none;">
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; margin-bottom:0.3rem; font-weight:600;">علامة مميزة للعنوان</label>
+                    <input type="text" id="custLandmark" placeholder="بجوار سوبر ماركت / مسجد ..." style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:8px; outline:none;">
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button type="submit" style="flex:1; background:var(--success); color:white; border:none; padding:0.7rem; border-radius:8px; cursor:pointer; font-weight:bold;">إرسال الطلب عبر الواتساب</button>
+                    <button type="button" onclick="closeModal()" style="background:#888; color:white; border:none; padding:0.7rem 1rem; border-radius:8px; cursor:pointer;">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* 
+          ==================================================
+          منطقة التعديل: ضع أسماء الأصناف، الأسعار، الصور هنا
+          ==================================================
+        */
+        const FOOD_ITEMS = [
+            {
+                id: 1,
+                name: "Double Beef Burger",
+                category: "burgers",
+                price: 150,
+                description: "قطعتين لحم بقر غني مع جبن الشيدر الذائب والصوص الخاص.",
+                image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                id: 2,
+                name: "Spicy Chicken Burger",
+                category: "burgers",
+                price: 120,
+                description: "دجاج مقرمش حار مع خس طازج وصوص مايونيز بالتشيلي.",
+                image: "https://6adb99e7280f596b55eef5fb.imgix.net/sandbox/sbf-chicken-sandwich-preview-scaled.webp"
+            },
+            {
+                id: 3,
+                name: "Pepperoni Pizza",
+                category: "pizza",
+                price: 180,
+                description: "عجين إيطالي رقيق مع شرائح البيبروني وجبن الموزاريلا.",
+                image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                id: 4,
+                name: "Vegetable Margherita Pizza",
+                category: "pizza",
+                price: 140,
+                description: "تشكيلة طازجة من الخضار مع صلصة الطماطم الطبيعية وجبن الموزاريلا.",
+                image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                id: 5,
+                name: "Coca Cola",
+                category: "drinks",
+                price: 25,
+                description: "Coca Cola بارد ومنعش.",
+                image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=80"
+            }
+        ];
+
+        let cart = [];
+
+        // عرض المنتجات في الصفحة
+        function displayMenu(items) {
+            const grid = document.getElementById('menuGrid');
+            grid.innerHTML = '';
+
+            if(items.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888;">عذراً، لم نجد نتائج مطابقة لبحثك.</p>';
+                return;
+            }
+
+            items.forEach(item => {
+                grid.innerHTML += `
+                    <div class="food-card">
+                        <img src="${item.image}" alt="${item.name}" class="food-img">
+                        <div class="food-content">
+                            <h3 class="food-title">${item.name}</h3>
+                            <p class="food-desc">${item.description}</p>
+                            <div class="food-footer">
+                                <span class="food-price">${item.price} ج.م</span>
+                                <button class="add-btn" onclick="addToCart(${item.id})">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // فلترة الأقسام
+        function filterCategory(category) {
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(category === 'all') {
+                displayMenu(FOOD_ITEMS);
+            } else {
+                const filtered = FOOD_ITEMS.filter(item => item.category === category);
+                displayMenu(filtered);
+            }
+        }
+
+        // البحث
+        function searchFood() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = FOOD_ITEMS.filter(item => 
+                item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
+            );
+            displayMenu(filtered);
+        }
+
+        // إضافة للسلة
+        function addToCart(id) {
+            const product = FOOD_ITEMS.find(item => item.id === id);
+            const existing = cart.find(item => item.id === id);
+
+            if(existing) {
+                existing.qty++;
+            } else {
+                cart.push({...product, qty: 1});
+            }
+            updateCartUI();
+        }
+
+        // تحديث واجهة السلة
+        function updateCartUI() {
+            const cartContainer = document.getElementById('cartItems');
+            const totalContainer = document.getElementById('cartTotal');
+
+            if(cart.length === 0) {
+                cartContainer.innerHTML = '<div class="empty-cart">السلة فارغة حالياً</div>';
+                totalContainer.innerText = '0 ج.م';
+                return;
+            }
+
+            cartContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                total += item.price * item.qty;
+                cartContainer.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-details">
+                            <h4>${item.name}</h4>
+                            <p>${item.price * item.qty} ج.م</p>
+                        </div>
+                        <div class="cart-item-controls">
+                            <button onclick="changeQty(${item.id}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="changeQty(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            totalContainer.innerText = total + ' ج.م';
+        }
+
+        // تعديل الكمية في السلة
+        function changeQty(id, change) {
+            const item = cart.find(i => i.id === id);
+            if(item) {
+                item.qty += change;
+                if(item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== id);
+                }
+            }
+            updateCartUI();
+        }
+
+        // تأكيد الطلب (فتح نافذة البيانات)
+        function checkout() {
+            if(cart.length === 0) {
+                alert('السلة فارغة، أضف بعض الوجبات أولاً!');
+                return;
+            }
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        // إغلاق نافذة البيانات
+        function closeModal() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        // إرسال الطلب عبر الواتساب مع رقم الطلب والتفاصيل
+        function submitOrder(event) {
+            event.preventDefault();
+
+            // 1. توليد رقم طلب عشوائي ومميز (مثلاً: #8492)
+            const orderId = '#' + Math.floor(1000 + Math.random() * 9000);
+
+            // 2. جمع بيانات العميل
+            const name = document.getElementById('custName').value;
+            const phone = document.getElementById('custPhone').value;
+            const address = document.getElementById('custAddress').value;
+            const landmark = document.getElementById('custLandmark').value || 'لا يوجد';
+
+            // 3. تجميع تفاصيل الأصناف والأسعار الكلية
+            let orderItemsText = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                let itemTotal = item.price * item.qty;
+                total += itemTotal;
+                orderItemsText += `- ${item.name} (الكمية: ${item.qty}) = ${itemTotal} ج.م\n`;
+            });
+
+            // 4. كتابة نص رسالة الواتساب بالكامل (رقم الطلب في الأعلى)
+            let whatsappMessage = `🚨 *طلب جديد للمطعم* 🚨\n`;
+            whatsappMessage += `🔢 *رقم الطلب:* ${orderId}\n`;
+            whatsappMessage += `--------------------------------\n`;
+            whatsappMessage += `👤 *اسم العميل:* ${name}\n`;
+            whatsappMessage += `📞 *رقم التليفون:* ${phone}\n`;
+            whatsappMessage += `🏠 *العنوان:* ${address}\n`;
+            whatsappMessage += `📍 *علامة مميزة:* ${landmark}\n`;
+            whatsappMessage += `--------------------------------\n`;
+            whatsappMessage += `🛒 *الأصناف المطلوبة:*\n${orderItemsText}`;
+            whatsappMessage += `--------------------------------\n`;
+            whatsappMessage += `💰 *المجموع الكلي:* ${total} ج.م`;
+
+            // 5. رقم الواتساب الخاص بك (قم بتغيير الرقم أدناه إلى رقمك مع كود الدولة، مثلاً لمصر: 201xxxxxxxxx+)
+            const restaurantWhatsAppNumber = "201126900699"; // <--- حط رقمك هنا
+
+            // 6. فتح تطبيق الواتساب بالرسالة الجاهزة
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            const whatsappURL = `https://wa.me/${restaurantWhatsAppNumber}?text=${encodedMessage}`;
+
+            window.open(whatsappURL, '_blank');
+
+            // 7. تنظيف السلة وإغلاق النافذة
+            cart = [];
+            updateCartUI();
+            document.getElementById('orderForm').reset();
+            closeModal();
+        }
+
+        // التشغيل الأولي
+        displayMenu(FOOD_ITEMS);
+    </script>
+</body>
+</html>
